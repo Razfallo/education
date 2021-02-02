@@ -1,6 +1,8 @@
 import card_balance
 import cards_list
 
+STOP_WORD = "stop"
+
 
 def mob_payment():
     phrase = input("Введите сумму и карту: ")
@@ -9,7 +11,7 @@ def mob_payment():
     i = 0
     digit_check = 0
     card_check = 0
-    final_phrase = {"final_amount": "final_amount", "final_card": "final_card"}
+    final_phrase = {"final_amount": "final_amount", "final_card": "final_card", "STOP_WORD": "STOP_WORD"}
     if len(phrase_by_words) < 1:
         print("Введены некорректные данные.\n")
         return None
@@ -18,8 +20,8 @@ def mob_payment():
             final_phrase["final_amount"] = phrase_by_words[i]
             print("Введена сумма:", phrase_by_words[i])
             digit_check += 1
-        elif phrase_by_words[i] == "stop":
-            stop()
+        elif phrase_by_words[i] == STOP_WORD:
+            final_phrase["STOP_WORD"] = STOP_WORD
             break
         elif str(phrase_by_words[i]) in cards_list.cards():
             final_phrase["final_card"] = phrase_by_words[i]
@@ -29,26 +31,32 @@ def mob_payment():
     print(phrase_by_words)
     print(final_phrase)
     print("digits:", digit_check, "\n", "cards", card_check)  # проверка перебора списка
-    if digit_check == 1 and card_check == 1:
+    if final_phrase["STOP_WORD"] == STOP_WORD:
+        stop()
+    elif digit_check == 1 and card_check == 1:
         print("Перевожу", final_phrase["final_amount"], "c", final_phrase["final_card"])
         return None
-    if digit_check > 1 or card_check > 1:
-        print("Введены некорректные данные")
-        return None
     elif digit_check == 0 and card_check == 1:
-        amount = amount_inbalance(input("Введите сумму: "))
-        if amount == "stop":
+        amount = process_amount(input("Введите сумму: "))
+        if amount == STOP_WORD:
             stop()
         else:
             print("Перевожу", amount, "c", phrase_by_words[0])
             return None
     elif digit_check == 1 and card_check == 0:
-        card = card_isknown(input("Выберите карту: "))
-        if card == "stop":
+        card = process_voice_card(input("Выберите карту: "))
+        if card == STOP_WORD:
             stop()
         else:
-            print("Перевожу", amount_inbalance(phrase_by_words[0]), "c", card)
+            print(f"Перевожу {process_amount(phrase_by_words[0])} c {card}")
             return None
+    else:
+        print("Введены некорректные данные")
+        return None
+
+
+def is_stop(word: str) -> bool:
+    return word == STOP_WORD
 
 
 def stop():
@@ -56,33 +64,62 @@ def stop():
     return None
 
 
-def amount_inbalance(amount):
-    balance = card_balance.balance()
+def is_float(word: str) -> bool:
     try:
-        amount = round(float(amount), 2)
-        if amount <= balance:  # ну наверняка есть функция возвращающая баланс на карте
-            return amount
-        elif amount > balance:
-            print("Недостаточно средств")
-            return amount_inbalance(input("Повторите ввод суммы: "))
-        else:
-            print("Введены некорректные данные.\n")
-            return amount_inbalance(input("Повторите ввод суммы: "))
+        float(word)
+        return True
     except ValueError:
-        if str(amount) == "stop":
-            return "stop"
-        else:
-            return amount_inbalance(input("Повторите ввод суммы: "))
+        return False
 
 
-def card_isknown(voice_in):
-    if voice_in in cards_list.cards():
+def convert_to_float(word: str) -> float:
+    """
+    Convert string to float with rounding a number to 2 decimal digits.
+    :param word:
+    :return: decimal
+    :raise ValueError: if word can not be converted
+    """
+    return round(float(word), 2)
+
+
+def is_amount_in_balance(amount: float) -> bool:
+    balance = card_balance.balance()
+    amount = round(float(amount), 2)
+    if amount <= balance:
+        return True
+    else:
+        return False
+
+
+def process_amount(str_amount: str):
+    if is_stop(str_amount):
+        return STOP_WORD
+
+    if not is_float(str_amount):
+        print("Введены некорректные данные.\n")
+        return process_amount(input("Повторите ввод суммы: "))
+
+    amount = convert_to_float(str_amount)
+
+    if is_amount_in_balance(amount):
+        return amount
+    else:
+        print("Недостаточно средств")
+        return process_amount(input("Повторите ввод суммы: "))
+
+
+def is_card_known(voice_in: str) -> bool:
+    return voice_in in cards_list.cards()
+
+
+def process_voice_card(voice_in: str) -> str:
+    if is_card_known(voice_in):
         card = voice_in
         return card
-    elif voice_in == "stop":
-        return "stop"
+    elif is_stop(voice_in):
+        return STOP_WORD
     else:
-        return card_isknown(input("Повторите ввод карты: "))
+        return process_voice_card(input("Повторите ввод карты: "))
 
 
 if __name__ == "__main__":  # Переменная __name__ указывает на имя модуля. Для главного модуля, который непосредственно
