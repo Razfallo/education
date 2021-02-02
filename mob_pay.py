@@ -1,13 +1,13 @@
 import card_balance
 import cards_list
 
+
 STOP_WORD = "stop"
 
 
 def mob_payment():
     phrase = input("Введите сумму и карту: ")
     phrase_by_words = phrase.split()
-    phrase_by_words.sort()
     i = 0
     digit_check = 0
     card_check = 0
@@ -132,3 +132,4 @@ if __name__ == "__main__":  # Переменная __name__ указывает �
     # Данный подход с проверкой имени модуля является более рекомендуемым подходом, чем просто вызов метода main.
     # example()
     mob_payment()
+
