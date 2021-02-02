@@ -30,11 +30,11 @@ def mob_payment():
         i += 1
     print(phrase_by_words)
     print(final_phrase)
-    print(f"digits: {digit_check} \n {cards} card_check")  # проверка перебора списка
+    print(f"digits: {digit_check} \n cards {card_check}")  # проверка перебора списка
     if final_phrase["STOP_WORD"] == STOP_WORD:
         stop()
     elif digit_check == 1 and card_check == 1:
-        print(f"Перевожу {final_phrase[0]} c {final_phrase[1]}")
+        print(f"Перевожу {final_phrase['final_amount']} c {final_phrase['final_card']}")
         return None
     elif digit_check == 0 and card_check == 1:
         amount = process_amount(input("Введите сумму: "))
