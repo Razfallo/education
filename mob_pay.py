@@ -52,7 +52,7 @@ def mob_payment():
             return None
     else:
         print("Введены некорректные данные")
-        return None
+        return mob_payment()
 
 
 def is_stop(word: str) -> bool:
