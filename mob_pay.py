@@ -18,30 +18,30 @@ def mob_payment():
     while i < len(phrase_by_words):
         if phrase_by_words[i].replace('.', '', 1).isdigit():
             final_phrase["final_amount"] = phrase_by_words[i]
-            print("Введена сумма:", phrase_by_words[i])
+            print(f"Введена сумма: {phrase_by_words[i]}")
             digit_check += 1
         elif phrase_by_words[i] == STOP_WORD:
             final_phrase["STOP_WORD"] = STOP_WORD
             break
         elif str(phrase_by_words[i]) in cards_list.cards():
             final_phrase["final_card"] = phrase_by_words[i]
-            print("Выбрана карта:", phrase_by_words[i])
+            print(f"Выбрана карта: {phrase_by_words[i]}")
             card_check += 1
         i += 1
     print(phrase_by_words)
     print(final_phrase)
-    print("digits:", digit_check, "\n", "cards", card_check)  # проверка перебора списка
+    print(f"digits: {digit_check} \n {cards} card_check")  # проверка перебора списка
     if final_phrase["STOP_WORD"] == STOP_WORD:
         stop()
     elif digit_check == 1 and card_check == 1:
-        print("Перевожу", final_phrase["final_amount"], "c", final_phrase["final_card"])
+        print(f"Перевожу {final_phrase[0]} c {final_phrase[1]}")
         return None
     elif digit_check == 0 and card_check == 1:
         amount = process_amount(input("Введите сумму: "))
         if amount == STOP_WORD:
             stop()
         else:
-            print("Перевожу", amount, "c", phrase_by_words[0])
+            print(f"Перевожу {amount} c {phrase_by_words[0]}")
             return None
     elif digit_check == 1 and card_check == 0:
         card = process_voice_card(input("Выберите карту: "))
@@ -109,10 +109,15 @@ def process_amount(str_amount: str):
 
 
 def is_card_known(voice_in: str) -> bool:
-    return voice_in in cards_list.cards()
+    return voice_in in cards_list.cards()  # Если утверждение возврата верное, то возвращает true
 
 
 def process_voice_card(voice_in: str) -> str:
+    """
+    def fun_name(arg: arg_type) -> fun_type
+    arg_type - определил тип приходящего аргумента в функцию
+    fun_type - тип возвращаемого значения функцией
+    """
     if is_card_known(voice_in):
         card = voice_in
         return card
