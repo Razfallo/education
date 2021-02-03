@@ -11,10 +11,9 @@ def mob_payment():
     i = 0
     digit_check = 0
     card_check = 0
+    result = "1"
+    test_result = "0"
     final_phrase = {"final_amount": "final_amount", "final_card": "final_card", "STOP_WORD": "STOP_WORD"}
-    if len(phrase_by_words) < 1:
-        print("Введены некорректные данные.\n")
-        return None
     while i < len(phrase_by_words):
         if phrase_by_words[i].replace('.', '', 1).isdigit():
             final_phrase["final_amount"] = phrase_by_words[i]
@@ -28,31 +27,43 @@ def mob_payment():
             print(f"Выбрана карта: {phrase_by_words[i]}")
             card_check += 1
         i += 1
-    print(phrase_by_words)
-    print(final_phrase)
-    print(f"digits: {digit_check} \n cards {card_check}")  # проверка перебора списка
+    # print(phrase_by_words)   потом будет в лог инфа отправляться
+    # print(final_phrase)
+    # print(f"digits: {digit_check} \n cards {card_check}")  # проверка перебора списка
     if final_phrase["STOP_WORD"] == STOP_WORD:
         stop()
     elif digit_check == 1 and card_check == 1:
-        print(f"Перевожу {final_phrase['final_amount']} c {final_phrase['final_card']}")
-        return None
+        result = f"Операция выполнена. Перевожу {final_phrase['final_amount']} c {final_phrase['final_card']}"
+        test_result = "success"
     elif digit_check == 0 and card_check == 1:
         amount = process_amount(input("Введите сумму: "))
         if amount == STOP_WORD:
             stop()
         else:
-            print(f"Перевожу {amount} c {phrase_by_words[0]}")
-            return None
+            result = f"Операция выполнена. Перевожу {amount} c {phrase_by_words[0]}"
+            test_result = "success"
     elif digit_check == 1 and card_check == 0:
         card = process_voice_card(input("Выберите карту: "))
         if card == STOP_WORD:
             stop()
         else:
-            print(f"Перевожу {process_amount(phrase_by_words[0])} c {card}")
-            return None
+            result = f"Операция выполнена. Перевожу {process_amount(phrase_by_words[0])} c {card}"
+            test_result = "success"
+    elif len(phrase_by_words) < 1:
+        result = "Ошибка. Данные не были введены."
+        test_result = "fail"
+    elif digit_check > 1:
+        result = "Ошибка. Введено больше 1 суммы"
+        test_result = "fail"
+    elif card_check > 1:
+        result = "Ошибка. Введено больше 1 карты"
+        test_result = "fail"
     else:
-        print("Введены некорректные данные")
-        return mob_payment()
+        result = "Ошибка. Введены некорректные данные"
+        test_result = "fail"
+    # return mob_payment()
+    print(result)
+    return test_result
 
 
 def is_stop(word: str) -> bool:
