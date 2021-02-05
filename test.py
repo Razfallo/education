@@ -1,6 +1,13 @@
 import mob_pay
 
 
+def test_result(result: str):
+    if result == "success":
+        print("\nТест успешен\n")
+    else:
+        print("\nТест провален\n")
+
+
 def test_common_request():
     print("______________________________\nСтандартный ввод\n______________________________")
     request = "100.123 visa"
@@ -9,37 +16,25 @@ def test_common_request():
     переменная Input вызывает не встроенную ф-ию, а новую определенную нами. 
     В данном случае lambd'y, которая  возврашает переменная request
     """
-    if mob_pay.mob_payment() == "success":
-        print("\nТест успешен\n")
-    else:
-        print("\nТест провален\n")
+    test_result(mob_pay.mob_payment())
 
 
 def test_common_request_2():
     print("______________________________\nСтандартный ввод №2\n______________________________")
     mob_pay.input = lambda x: "mastercard 123"
-    if mob_pay.mob_payment() == "success":
-        print("\nТест успешен\n")
-    else:
-        print("\nТест провален\n")
+    test_result(mob_pay.mob_payment())
 
 
 def test_with_no_input():
     print("______________________________\nПустой ввод\n______________________________")
     mob_pay.input = lambda x: None
-    if mob_pay.mob_payment() == "success":
-        print("\nТест успешен\n")
-    else:
-        print("\nТест провален\n")
+    test_result(mob_pay.mob_payment())
 
 
 def test_with_rubbish():
     print("______________________________\nВвод с <мусором>\n______________________________")
     mob_pay.input = lambda x: "mastercard 123 rubbish"
-    if mob_pay.mob_payment() == "success":
-        print("\nТест успешен\n")
-    else:
-        print("\nТест провален\n")
+    test_result(mob_pay.mob_payment())
 
 
 def test_doubled_amount():
@@ -47,10 +42,7 @@ def test_doubled_amount():
     step_inputs = {0: "123 123 visa", 1: "321 visa"}
     context = {"step_inputs": step_inputs, "step_number": 0}
     mob_pay.input = lambda x: _on_doubled_input(context)
-    if mob_pay.mob_payment() == "success":
-        print("\nТест успешен\n")
-    else:
-        print("\nТест провален\n")
+    test_result(mob_pay.mob_payment())
 
 
 def test_doubled_card():
@@ -58,10 +50,7 @@ def test_doubled_card():
     step_inputs = {0: "123 mastercard visa", 1: "321 visa"}
     context = {"step_inputs": step_inputs, "step_number": 0}
     mob_pay.input = lambda x: _on_doubled_input(context)
-    if mob_pay.mob_payment() == "success":
-        print("\nТест успешен\n")
-    else:
-        print("\nТест провален\n")
+    test_result(mob_pay.mob_payment())
 
 
 def _on_doubled_input(context: dict) -> str:

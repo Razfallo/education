@@ -49,19 +49,24 @@ def mob_payment():
         else:
             result = f"Операция выполнена. Перевожу {process_amount(phrase_by_words[0])} c {card}"
             test_result = "success"
-    elif len(phrase_by_words) < 1:
-        result = "Ошибка. Данные не были введены."
-        test_result = "fail"
-    elif digit_check > 1:
-        result = "Ошибка. Введено больше 1 суммы"
-        test_result = "fail"
-    elif card_check > 1:
-        result = "Ошибка. Введено больше 1 карты"
-        test_result = "fail"
     else:
-        result = "Ошибка. Введены некорректные данные"
-        test_result = "fail"
-    # return mob_payment()
+        if len(phrase_by_words) < 1:
+            result = "Ошибка. Данные не были введены.\n"
+            print(result)
+            test_result = "fail"
+        elif digit_check > 1:
+            result = "Ошибка. Введено больше 1 суммы\n"
+            print(result)
+            test_result = "fail"
+        elif card_check > 1:
+            result = "Ошибка. Введено больше 1 карты\n"
+            print(result)
+            test_result = "fail"
+        else:
+            result = "Ошибка. Введены некорректные данные\n"
+            print(result)
+            test_result = "fail"
+        return mob_payment()
     print(result)
     return test_result
 
