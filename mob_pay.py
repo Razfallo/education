@@ -36,41 +36,90 @@ def mob_payment():
     # print(f"digits: {digit_check} \n cards {card_check}")  # проверка перебора списка
     if final_phrase["STOP_WORD"] == STOP_WORD:
         stop()
-    elif digit_check == 1 and card_check == 1 and contact_check == 1:
-        result = f"Операция выполнена. Перевожу {final_phrase['final_amount']} c {final_phrase['final_card']} на {final_phrase['final_contact']}"
-        test_result = "success"
-    elif digit_check == 0 and card_check == 1 and contact_check == 1:
+    elif len(phrase_by_words) < 1:
+        result = "Ошибка. Данные не были введены.\n"
+        test_result = "fail"
+        print(result)
+        return test_result
+    elif digit_check > 1:
+        result = "Ошибка. Введено больше 1 суммы\n"
+        test_result = "fail"
+        print(result)
+        return test_result
+    elif card_check > 1:
+        result = "Ошибка. Введено больше 1 карты\n"
+        test_result = "fail"
+        print(result)
+        return test_result
+    elif contact_check > 1:
+        result = "Ошибка. Введено больше 1 контакта\n"
+        test_result = "fail"
+        print(result)
+        return test_result
+
+    if digit_check == 0:
         amount = process_amount(input("Введите сумму: "))
         if amount == STOP_WORD:
             stop()
         else:
-            result = f"Операция выполнена. Перевожу {amount} c {phrase_by_words[0]}"
-            test_result = "success"
-    elif digit_check == 1 and card_check == 0 and contact_check == 1:
+            print(f"Введена сумма {amount}")
+            final_phrase["final_amount"] = amount
+
+    if card_check == 0:
         card = process_voice_card(input("Выберите карту: "))
         if card == STOP_WORD:
             stop()
         else:
-            result = f"Операция выполнена. Перевожу {process_amount(phrase_by_words[0])} c {card}"
-            test_result = "success"
-    else:
-        if len(phrase_by_words) < 1:
-            result = "Ошибка. Данные не были введены.\n"
-            test_result = "fail"
-        elif digit_check > 1:
-            result = "Ошибка. Введено больше 1 суммы\n"
-            test_result = "fail"
-        elif card_check > 1:
-            result = "Ошибка. Введено больше 1 карты\n"
-            test_result = "fail"
-        elif contact_check > 1:
-            result = "Ошибка. Введено больше 1 контакта\n"
-            test_result = "fail"
+            print(f"Выбрана карта {card}")
+            final_phrase["final_card"] = card
+
+    if contact_check == 0:
+        contact = process_voice_contact(input("Введите получателя: "))
+        if contact == STOP_WORD:
+            stop()
         else:
-            result = "Ошибка. Введены некорректные данные\n"
-            test_result = "fail"
+            print(f"Выбран получатель {contact}")
+            final_phrase["final_contact"] = contact
+    result = f"Операция выполнена. Перевожу {final_phrase['final_amount']} c {final_phrase['final_card']} на {final_phrase['final_contact']}"
+    test_result = "success"
     print(result)
     return test_result
+
+    # else:
+    #     result = f"Операция выполнена. Перевожу {final_phrase['final_amount']} c {final_phrase['final_card']} на {final_phrase['final_contact']}"
+    #     test_result = "success"
+    # elif digit_check == 0 and card_check == 1 and contact_check == 1:
+    #     amount = process_amount(input("Введите сумму: "))
+    #     if amount == STOP_WORD:
+    #         stop()
+    #     else:
+    #         result = f"Операция выполнена. Перевожу {amount} c {phrase_by_words[0]} на {final_phrase['final_contact']}"
+    #         test_result = "success"
+    # elif digit_check == 1 and card_check == 0 and contact_check == 1:
+    #     card = process_voice_card(input("Выберите карту: "))
+    #     if card == STOP_WORD:
+    #         stop()
+    #     else:
+    #         result = f"Операция выполнена. Перевожу {process_amount(phrase_by_words[0])} c {card} на {final_phrase['final_contact']}"
+    #         test_result = "success"
+    # else:
+    #     if len(phrase_by_words) < 1:
+    #         result = "Ошибка. Данные не были введены.\n"
+    #         test_result = "fail"
+    #     elif digit_check > 1:
+    #         result = "Ошибка. Введено больше 1 суммы\n"
+    #         test_result = "fail"
+    #     elif card_check > 1:
+    #         result = "Ошибка. Введено больше 1 карты\n"
+    #         test_result = "fail"
+    #     elif contact_check > 1:
+    #         result = "Ошибка. Введено больше 1 контакта\n"
+    #         test_result = "fail"
+    #     else:
+    #         result = "Ошибка. Введены некорректные данные\n"
+    #         test_result = "fail"
+    # print(result)
+    # return test_result
 
 
 def is_stop(word: str) -> bool:
@@ -157,10 +206,20 @@ def is_contact_known(voice_in: str) -> bool:
                 return False
 
 
+def process_voice_contact(voice_in: str) -> str:
+    if is_contact_known(voice_in):
+        contact = voice_in
+        return contact
+    elif is_stop(voice_in):
+        return STOP_WORD
+    else:
+        return process_voice_contact(input("Повторите ввод получателя: "))
+
+
 if __name__ == "__main__":  # Переменная __name__ указывает на имя модуля. Для главного модуля, который непосредственно
     # запускается, эта переменная всегда будет иметь значение __main__ вне зависимости от имени файла.
     # Данный подход с проверкой имени модуля является более рекомендуемым подходом, чем просто вызов метода main.
     # example()
-    #mob_payment()
-    is_contact_known("mom")
+    mob_payment()
+
 
