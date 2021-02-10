@@ -1,19 +1,19 @@
-import card_balance
-import cards_list
+import known_data
 
 
 STOP_WORD = "stop"
 
 
 def mob_payment():
-    phrase = input("Введите сумму и карту: ")
+    phrase = input("Введите сумму, карту и получателя: ")
     phrase_by_words = phrase.split()
     i = 0
     digit_check = 0
     card_check = 0
+    contact_check = 0
     result = "1"
     test_result = "0"
-    final_phrase = {"final_amount": "final_amount", "final_card": "final_card", "STOP_WORD": "STOP_WORD"}
+    final_phrase = {"final_amount": "final_amount", "final_card": "final_card", "final_contact": "final_contact", "STOP_WORD": "STOP_WORD"}
     while i < len(phrase_by_words):
         if phrase_by_words[i].replace('.', '', 1).isdigit():
             final_phrase["final_amount"] = phrase_by_words[i]
@@ -22,27 +22,31 @@ def mob_payment():
         elif phrase_by_words[i] == STOP_WORD:
             final_phrase["STOP_WORD"] = STOP_WORD
             break
-        elif str(phrase_by_words[i]) in cards_list.cards():
+        elif phrase_by_words[i] in known_data.cards():
             final_phrase["final_card"] = phrase_by_words[i]
             print(f"Выбрана карта: {phrase_by_words[i]}")
             card_check += 1
+        elif phrase_by_words[i] in known_data.contacts():
+            final_phrase["final_contact"] = phrase_by_words[i]
+            print(f"Выбран номер: {phrase_by_words[i]}")
+            contact_check += 1
         i += 1
     # print(phrase_by_words)   потом будет в лог инфа отправляться
     # print(final_phrase)
     # print(f"digits: {digit_check} \n cards {card_check}")  # проверка перебора списка
     if final_phrase["STOP_WORD"] == STOP_WORD:
         stop()
-    elif digit_check == 1 and card_check == 1:
-        result = f"Операция выполнена. Перевожу {final_phrase['final_amount']} c {final_phrase['final_card']}"
+    elif digit_check == 1 and card_check == 1 and contact_check == 1:
+        result = f"Операция выполнена. Перевожу {final_phrase['final_amount']} c {final_phrase['final_card']} на {final_phrase['final_contact']}"
         test_result = "success"
-    elif digit_check == 0 and card_check == 1:
+    elif digit_check == 0 and card_check == 1 and contact_check == 1:
         amount = process_amount(input("Введите сумму: "))
         if amount == STOP_WORD:
             stop()
         else:
             result = f"Операция выполнена. Перевожу {amount} c {phrase_by_words[0]}"
             test_result = "success"
-    elif digit_check == 1 and card_check == 0:
+    elif digit_check == 1 and card_check == 0 and contact_check == 1:
         card = process_voice_card(input("Выберите карту: "))
         if card == STOP_WORD:
             stop()
@@ -52,21 +56,19 @@ def mob_payment():
     else:
         if len(phrase_by_words) < 1:
             result = "Ошибка. Данные не были введены.\n"
-            print(result)
             test_result = "fail"
         elif digit_check > 1:
             result = "Ошибка. Введено больше 1 суммы\n"
-            print(result)
             test_result = "fail"
         elif card_check > 1:
             result = "Ошибка. Введено больше 1 карты\n"
-            print(result)
+            test_result = "fail"
+        elif contact_check > 1:
+            result = "Ошибка. Введено больше 1 контакта\n"
             test_result = "fail"
         else:
             result = "Ошибка. Введены некорректные данные\n"
-            print(result)
             test_result = "fail"
-        return mob_payment()
     print(result)
     return test_result
 
@@ -99,7 +101,7 @@ def convert_to_float(word: str) -> float:
 
 
 def is_amount_in_balance(amount: float) -> bool:
-    balance = card_balance.balance()
+    balance = known_data.balance()
     amount = round(float(amount), 2)
     if amount <= balance:
         return True
@@ -125,7 +127,7 @@ def process_amount(str_amount: str):
 
 
 def is_card_known(voice_in: str) -> bool:
-    return voice_in in cards_list.cards()  # Если утверждение возврата верное, то возвращает true
+    return voice_in in known_data.cards()  # Если утверждение возврата верное, то возвращает true
 
 
 def process_voice_card(voice_in: str) -> str:
@@ -143,9 +145,22 @@ def process_voice_card(voice_in: str) -> str:
         return process_voice_card(input("Повторите ввод карты: "))
 
 
+def is_contact_known(voice_in: str) -> bool:
+    contacts = known_data.contacts()
+    if voice_in in contacts:
+        return True
+    else:
+        for value in contacts.values():
+            if value == voice_in:
+                return True
+            else:
+                return False
+
+
 if __name__ == "__main__":  # Переменная __name__ указывает на имя модуля. Для главного модуля, который непосредственно
     # запускается, эта переменная всегда будет иметь значение __main__ вне зависимости от имени файла.
     # Данный подход с проверкой имени модуля является более рекомендуемым подходом, чем просто вызов метода main.
     # example()
-    mob_payment()
+    #mob_payment()
+    is_contact_known("mom")
 

@@ -2,7 +2,7 @@ import mob_pay
 
 
 def test_result(result: str):
-    if result == "success":
+    if result == "success" or "fail":
         print("\nТест успешен\n")
     else:
         print("\nТест провален\n")
@@ -27,7 +27,7 @@ def test_common_request_2():
 
 def test_with_no_input():
     print("______________________________\nПустой ввод\n______________________________")
-    mob_pay.input = lambda x: None
+    mob_pay.input = lambda x: " "
     test_result(mob_pay.mob_payment())
 
 
