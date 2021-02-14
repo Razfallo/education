@@ -11,8 +11,6 @@ def mob_payment():
     digit_check = 0
     card_check = 0
     contact_check = 0
-    result = "1"
-    test_result = "0"
     final_phrase = {"final_amount": "final_amount", "final_card": "final_card", "final_contact": "final_contact", "STOP_WORD": "STOP_WORD"}
     while i < len(phrase_by_words):
         if phrase_by_words[i].replace('.', '', 1).isdigit():
@@ -31,9 +29,11 @@ def mob_payment():
             print(f"Выбран номер: {phrase_by_words[i]}")
             contact_check += 1
         i += 1
+
     # print(phrase_by_words)   потом будет в лог инфа отправляться
     # print(final_phrase)
     # print(f"digits: {digit_check} \n cards {card_check}")  # проверка перебора списка
+
     if final_phrase["STOP_WORD"] == STOP_WORD:
         stop()
     elif len(phrase_by_words) < 1:
@@ -80,46 +80,45 @@ def mob_payment():
         else:
             print(f"Выбран получатель {contact}")
             final_phrase["final_contact"] = contact
-    result = f"Операция выполнена. Перевожу {final_phrase['final_amount']} c {final_phrase['final_card']} на {final_phrase['final_contact']}"
-    test_result = "success"
-    print(result)
-    return test_result
 
-    # else:
-    #     result = f"Операция выполнена. Перевожу {final_phrase['final_amount']} c {final_phrase['final_card']} на {final_phrase['final_contact']}"
-    #     test_result = "success"
-    # elif digit_check == 0 and card_check == 1 and contact_check == 1:
-    #     amount = process_amount(input("Введите сумму: "))
-    #     if amount == STOP_WORD:
-    #         stop()
-    #     else:
-    #         result = f"Операция выполнена. Перевожу {amount} c {phrase_by_words[0]} на {final_phrase['final_contact']}"
-    #         test_result = "success"
-    # elif digit_check == 1 and card_check == 0 and contact_check == 1:
-    #     card = process_voice_card(input("Выберите карту: "))
-    #     if card == STOP_WORD:
-    #         stop()
-    #     else:
-    #         result = f"Операция выполнена. Перевожу {process_amount(phrase_by_words[0])} c {card} на {final_phrase['final_contact']}"
-    #         test_result = "success"
-    # else:
-    #     if len(phrase_by_words) < 1:
-    #         result = "Ошибка. Данные не были введены.\n"
-    #         test_result = "fail"
-    #     elif digit_check > 1:
-    #         result = "Ошибка. Введено больше 1 суммы\n"
-    #         test_result = "fail"
-    #     elif card_check > 1:
-    #         result = "Ошибка. Введено больше 1 карты\n"
-    #         test_result = "fail"
-    #     elif contact_check > 1:
-    #         result = "Ошибка. Введено больше 1 контакта\n"
-    #         test_result = "fail"
-    #     else:
-    #         result = "Ошибка. Введены некорректные данные\n"
-    #         test_result = "fail"
-    # print(result)
-    # return test_result
+    print(f"______________________________\nСумма:{final_phrase['final_amount']}\nКарта:{final_phrase['final_card']}\nПолучатель:{final_phrase['final_contact']}\n")
+
+    choice = "1"
+    while choice != "да":
+        choice = input("Все верно?")
+        if choice == STOP_WORD:
+            stop()
+            break
+        elif choice == "изменить сумму":
+            amount = process_amount(input("Введите сумму: "))
+            if amount == STOP_WORD:
+                stop()
+                break
+            else:
+                print(f"Введена сумма {amount}")
+                final_phrase["final_amount"] = amount
+        elif choice == "изменить карту":
+            card = process_voice_card(input("Выберите карту: "))
+            if card == STOP_WORD:
+                stop()
+                break
+            else:
+                print(f"Выбрана карта {card}")
+                final_phrase["final_card"] = card
+        elif choice == "изменить номер":
+            contact = process_voice_contact(input("Введите получателя: "))
+            if contact == STOP_WORD:
+                stop()
+                break
+            else:
+                print(f"Выбран получатель {contact}")
+                final_phrase["final_contact"] = contact
+        else:
+            print("Повторите ввод.")
+    result = f"Перевожу {final_phrase['final_amount']} c {final_phrase['final_card']} на {final_phrase['final_contact']}"
+    print(result)
+    test_result = "success"
+    return test_result
 
 
 def is_stop(word: str) -> bool:
