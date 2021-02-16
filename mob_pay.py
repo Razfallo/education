@@ -83,47 +83,6 @@ def mob_payment():
 
     print(f"______________________________\nСумма:{final_phrase['final_amount']}\nКарта:{final_phrase['final_card']}\nПолучатель:{final_phrase['final_contact']}\n")
 
-    # choice = "1"
-    # while choice != "да":
-    #     choice = input("Все верно?")
-    #     if choice == STOP_WORD:
-    #         stop()
-    #         test_result = "success"
-    #         return test_result
-    #     elif choice == "изменить сумму":
-    #         amount = process_amount(input("Введите сумму: "))
-    #         if amount == STOP_WORD:
-    #             stop()
-    #             test_result = "success"
-    #             return test_result
-    #         else:
-    #             print(f"Введена сумма {amount}")
-    #             final_phrase["final_amount"] = amount
-    #     elif choice == "изменить карту":
-    #         card = process_voice_card(input("Выберите карту: "))
-    #         if card == STOP_WORD:
-    #             stop()
-    #             test_result = "success"
-    #             return test_result
-    #         else:
-    #             print(f"Выбрана карта {card}")
-    #             final_phrase["final_card"] = card
-    #     elif choice == "изменить номер":
-    #         contact = process_voice_contact(input("Введите получателя: "))
-    #         if contact == STOP_WORD:
-    #             stop()
-    #             test_result = "success"
-    #             return test_result
-    #         else:
-    #             print(f"Выбран получатель {contact}")
-    #             final_phrase["final_contact"] = contact
-    #     else:
-    #         print("Повторите ввод.")
-    # result = f"Перевожу {final_phrase['final_amount']} c {final_phrase['final_card']} на {final_phrase['final_contact']}"
-    # print(result)
-    # test_result = "success"
-    # return test_result
-
     try:
         final_phrase["final_amount"], final_phrase["final_card"], final_phrase["final_contact"] = confirmation(final_phrase["final_amount"], final_phrase["final_card"], final_phrase["final_contact"])
         print(f"Перевожу {final_phrase['final_amount']} с {final_phrase['final_card']} на {final_phrase['final_contact']}")
