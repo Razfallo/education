@@ -1,20 +1,19 @@
 from typing import List, Any, Optional, Dict
 
-import known_data
-import mob_pay
-from state_machine import State, Context
+from mob_pay import known_data
+from mob_pay.state_machine.base_classes import Context, State
 
 
 def process_voice_contact(param):
-    return mob_pay.process_voice_contact(param)
+    return process_voice_contact(param)
 
 
 def process_amount(param):
-    return mob_pay.process_amount(param)
+    return process_amount(param)
 
 
 def process_voice_card(param):
-    return mob_pay.process_voice_card(param)
+    return process_voice_card(param)
 
 
 class MobilePaymentContext(Context):
