@@ -1,7 +1,7 @@
 import known_data
 
 
-STOP_WORD = "stop"
+STOP_WORD = known_data.STOP_WORD
 
 
 def mob_payment():
