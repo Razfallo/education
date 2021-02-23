@@ -52,6 +52,8 @@ class ProcessingEnteredDataState(State):
     """
     Проверка веденных данных
     Дозапрос, если что-то отсутствует
+
+    В handle_request'e вариант смены состояния без run'а
     """
 
     context: MobilePaymentContext
@@ -65,11 +67,10 @@ class ProcessingEnteredDataState(State):
                 print(f"Введена сумма: {self.context.phrase_by_words[i]}")
                 self.context.digit_check += 1
             elif self.context.phrase_by_words[i] == known_data.STOP_WORD:
-                self.context.final_phrase["STOP_WORD"] = known_data.STOP_WORD
                 print("Введено слово stop")
                 print(f"{self.__class__.__name__} changes state")
                 self.context.change_state(ExitViaStopWordState())
-                return self.context.run()
+                return self.context.state.handle_request()
             elif self.context.phrase_by_words[i] in known_data.cards():
                 self.context.final_phrase["final_card"] = self.context.phrase_by_words[i]
                 print(f"Выбрана карта: {self.context.phrase_by_words[i]}")
@@ -80,11 +81,7 @@ class ProcessingEnteredDataState(State):
                 self.context.contact_check += 1
             i += 1
 
-        if self.context.final_phrase["STOP_WORD"] == known_data.STOP_WORD:
-            print(f"{self.__class__.__name__} changes state")
-            self.context.change_state(ExitViaStopWordState())
-            return self.context.run()
-        elif len(self.context.phrase_by_words) < 1:
+        if len(self.context.phrase_by_words) < 1:
             result = "Ошибка. Данные не были введены."
             print(f"{self.__class__.__name__} changes state")
             self.context.error_message = result
