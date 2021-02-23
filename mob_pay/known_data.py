@@ -1,5 +1,7 @@
 import random
 
+STOP_WORD = "stop"
+
 
 def balance():
     possible_card_balance = list(range(10000))
